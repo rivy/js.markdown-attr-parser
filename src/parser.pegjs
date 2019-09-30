@@ -39,9 +39,9 @@ embedded_list =
     / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
 
 attribute_list =
-//    _* '<!--' _* '-->' { return normalize_attribute_list([], ''); }
-//    / _* '<!--' _* '{' _* a:attr_list _* '}' _* '-->' { return normalize_attribute_list(a, text()); }
-    _* '{' _* a:attr_list _* '}' { return normalize_attribute_list(a, text()); }
+    _* '<!--' _* '-->' { return normalize_attribute_list([], ''); }
+    / _* '<!--' _* '{' _* a:attr_list _* '}' _* '-->' { return normalize_attribute_list(a, text()); }
+    / _* '{' _* a:attr_list _* '}' { return normalize_attribute_list(a, text()); }
 
 bare_attribute_list =
     _* a:attr_list { return normalize_attribute_list(a, text()); }
