@@ -36,15 +36,15 @@
 
 embedded_list =
     a:attribute_list .* { return a; }
-    / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
+    // / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
 
 attribute_list =
     _* '<!--' _* '-->' { return normalize_attribute_list([], ''); }
     / _* '<!--' _* '{' _* a:attr_list _* '}' _* '-->' { return normalize_attribute_list(a, text()); }
     / _* '{' _* a:attr_list _* '}' { return normalize_attribute_list(a, text()); }
 
-bare_attribute_list =
-    _* a:attr_list { return normalize_attribute_list(a, text()); }
+// bare_attribute_list =
+//     _* a:attr_list { return normalize_attribute_list(a, text()); }
 
 attr_list =
     _* a:attr? b:(_+ c:attr { return c; })* { a = a || []; return [].concat(a).concat(b); }
@@ -94,5 +94,5 @@ key_name_charset = [^.#\0-\x1f\x20\x3d\x3c\x3e\x7b\x7d]
 value = text:(c:value_char)+ { return text.join(''); }
 
 class_name = '.' n:('.'* (c:(!'.' class_name_charset)+ { return c.join(''); }) { return text(); }) { return n; }
-id_name = '#' n:(string_with_quotes / id_name_charseq) { return n; }
-key_name = string_with_quotes / n:(key_name_charset)+ { return n.join(''); }
+id_name = '#' n:(id_name_charseq) { return n; }
+key_name = n:(key_name_charset)+ { return n.join(''); }
