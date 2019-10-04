@@ -4,7 +4,31 @@
 import test from 'ava';
 import parse from '../src';
 
-const errorHappened = {prop: {}, eaten: ''};
+const errorHappened = {
+  prop: {},
+  eaten: '',
+};
+
+test('simple comment', t => {
+  const toParse = '<!-- -->';
+  const r = parse(toParse);
+  t.deepEqual(r.prop, errorHappened.prop);
+  t.is(r.eaten, ''); // It's an error
+});
+
+test('simple empty comment', t => {
+  const toParse = '<!---->';
+  const r = parse(toParse);
+  t.deepEqual(r.prop, errorHappened.prop);
+  t.is(r.eaten, ''); // It's an error
+});
+
+test('simple empty braces', t => {
+  const toParse = '{}';
+  const r = parse(toParse);
+  t.deepEqual(r.prop, errorHappened.prop);
+  t.is(r.eaten, toParse); // It's an error
+});
 
 test('line-input', t => {
   const toParse = '{key=value}';
@@ -599,14 +623,18 @@ test('alone brace', t => {
 
 test('defaultValue true', t => {
   const toParse = '{visible}';
-  const r = parse(toParse, 0, {defaultValue: 'true'});
+  const r = parse(toParse, 0, {
+    defaultValue: 'true',
+  });
   t.is(r.prop.visible, 'true');
   t.is(r.eaten, toParse);
 });
 
 test('defaultValue name', t => {
   const toParse = '{visible}';
-  const r = parse(toParse, 0, {defaultValue: x => x});
+  const r = parse(toParse, 0, {
+    defaultValue: x => x,
+  });
   t.is(r.prop.visible, 'visible');
   t.is(r.eaten, toParse);
 });
