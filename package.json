@@ -9,6 +9,7 @@
     "build:parser": "pegjs --optimize size src/parser.pegjs",
     "clean": "del-cli dist",
     "coverage": "nyc report --reporter=text-lcov | codecov --disable=gcov --pipe",
+    "coverage:local": "nyc report --reporter=lcov",
     "lint": "run-p lint:*",
     "lint:spell": "cspell --no-summary src/**/*.js --exclude parser.js",
     "lint:style": "xo --ignore src/parser.js",
