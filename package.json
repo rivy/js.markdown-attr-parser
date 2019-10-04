@@ -6,7 +6,8 @@
   "scripts": {
     "build:parser": "pegjs --optimize size src/parser.pegjs",
     "coverage": "nyc report --reporter=text-lcov | codecov --disable=gcov --pipe",
-    "pretest": "npm run build:parser && xo --ignore src/parser.js",
+    "pretest:spell": "cspell --no-summary src/**/*.js --exclude parser.js",
+    "pretest": "npm run build:parser && npm run pretest:spell && xo --ignore src/parser.js",
     "prepare": "del-cli dist && npm run build:parser && cross-env BABEL_ENV=production babel src --out-dir dist",
     "test": "nyc --silent ava"
   },
@@ -29,6 +30,7 @@
     "ava": "^2.4.0",
     "codecov": "^3.6.1",
     "cross-env": "^6.0.0",
+    "cspell": "^4.0.30",
     "del-cli": "^3.0.0",
     "nyc": "^14.1.1",
     "pegjs": "^0.8.0",
