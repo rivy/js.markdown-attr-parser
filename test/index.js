@@ -30,6 +30,34 @@ test('simple empty braces', t => {
   t.is(r.eaten, toParse); // It's an error
 });
 
+test('string broken by EOT', t => {
+  const toParse = '{key="val';
+  const r = parse(toParse);
+  t.deepEqual(r.prop, errorHappened.prop);
+  t.is(r.eaten, toParse); // It's an error
+});
+
+test('string broken by EOL/LF', t => {
+  const toParse = '{key="val\nue"}';
+  const r = parse(toParse);
+  t.deepEqual(r.prop, errorHappened.prop);
+  t.is(r.eaten, toParse); // It's an error
+});
+
+test('string broken by EOL/CR', t => {
+  const toParse = '{key="val\rue"}';
+  const r = parse(toParse);
+  t.deepEqual(r.prop, errorHappened.prop);
+  t.is(r.eaten, toParse); // It's an error
+});
+
+test('string broken by EOL/CRLF', t => {
+  const toParse = '{key="val\rue"}';
+  const r = parse(toParse);
+  t.deepEqual(r.prop, errorHappened.prop);
+  t.is(r.eaten, toParse); // It's an error
+});
+
 test('line-input', t => {
   const toParse = '{key=value}';
   const r = parse(toParse);
