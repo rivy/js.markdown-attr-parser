@@ -40,7 +40,7 @@ function parse(value, indexNext, userConfig) {
     var parsed = parser.parse(value, config);
     parsed.eaten = prefix + parsed.eaten;
     return parsed;
-  } catch (_unused) {
+  } catch (_) {
     return nothingHappened;
   }
 }
