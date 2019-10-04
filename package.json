@@ -7,7 +7,7 @@
     "build:parser": "pegjs --optimize size src/parser.pegjs",
     "coverage": "nyc report --reporter=text-lcov | codecov --disable=gcov --pipe",
     "pretest": "npm run build:parser && xo --ignore src/parser.js",
-    "prepare": "del-cli dist && cross-env BABEL_ENV=production babel src --out-dir dist",
+    "prepare": "del-cli dist && npm run build:parser && cross-env BABEL_ENV=production babel src --out-dir dist",
     "test": "nyc --silent ava"
   },
   "repository": "github:rivy/markdown-attr-parser",
