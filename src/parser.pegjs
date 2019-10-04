@@ -84,10 +84,6 @@ string =
     (double_quote) s:((!double_quote)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (double_quote) { return s.join(''); }
     / (single_quote) s:((!single_quote)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (single_quote) { return s.join(''); }
 
-string_with_quotes =
-    (double_quote) s:((!double_quote)c:(quoted_chars / eol {return expected('string character');}) {return c;})+ (double_quote) { return '"' + s.join('') + '"'; }
-    / (single_quote) s:((!single_quote)c:(quoted_chars / eol {return expected('string character');}) {return c;})+ (single_quote) { return "'" + s.join('') + "'"; }
-
 class_name_charset = [^.\0-\x1f\x20\x3d\x7b\x7d]
 id_name_charseq = c:(escape_sequence / name_char)+ { return c.join(''); }
 key_name_charset = [^.#\0-\x1f\x20\x3d\x3c\x3e\x7b\x7d]
