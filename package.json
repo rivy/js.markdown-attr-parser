@@ -7,7 +7,8 @@
     "build:parser": "pegjs --optimize size src/parser.pegjs",
     "coverage": "nyc report --reporter=text-lcov | codecov --disable=gcov --pipe",
     "pretest:spell": "cspell --no-summary src/**/*.js --exclude parser.js",
-    "pretest": "npm run build:parser && npm run pretest:spell && xo --ignore src/parser.js",
+    "pretest:style": "xo --ignore src/parser.js",
+    "pretest": "npm run build:parser && npm run pretest:spell && npm run pretest:style",
     "prepare": "del-cli dist && npm run build:parser && cross-env BABEL_ENV=production babel src --out-dir dist",
     "test": "nyc --silent ava"
   },
