@@ -1,3 +1,4 @@
+/* eslint-disable no-warning-comments */
 'use strict';
 
 import test from 'ava';
