@@ -1,3 +1,3 @@
 const parser = require('..');
 
-console.log(parser('#id'));
+console.log(parser('{ #id }'));
