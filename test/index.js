@@ -3,7 +3,8 @@
 
 import test from 'ava';
 
-const parse = require('..');
+// # const parse = require('..');
+import parse from '..';
 
 const errorHappened = {
   prop: {},
