@@ -9,6 +9,7 @@ module.exports = {
     filename: 'index.js',
     library: 'markdown-attr-parser',
     libraryTarget: 'commonjs2',
+    globalObject: 'typeof self !== "undefined" ? self : this', // needed for UMD wrapper; ref: <https://github.com/markdalgleish/static-site-generator-webpack-plugin/issues/130#issuecomment-445435821>
   },
   module: {
     rules: [
@@ -17,9 +18,6 @@ module.exports = {
         use: 'pegjs-loader?optimize=size',
       },
     ],
-  },
-  node: {
-    fs: 'empty',
   },
   devServer: {},
   devtool: 'source-map',
