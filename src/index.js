@@ -1,6 +1,8 @@
 'use strict';
 
-const parser = require('./parser');
+// spell-checker:ignore PEGjs
+
+const parser = require('./parser.pegjs');
 
 // A valid output which means nothing has been parsed.
 // Used as error return / invalid output
