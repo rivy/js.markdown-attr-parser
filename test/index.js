@@ -2,7 +2,8 @@
 'use strict';
 
 import test from 'ava';
-import parse from '../src';
+
+const parse = require('..');
 
 const errorHappened = {
   prop: {},
