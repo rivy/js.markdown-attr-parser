@@ -5,15 +5,19 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "exec-if-updated --source package.json --source webpack.config.js --source src/** --target dist/** npm run build:do",
-    "build:do": "webpack",
+    "build:do": "webpack && run-s build:coverage-hack",
+    "build:coverage-hack": "node node_modules/replace-in-files-cli/cli.js --regex \"\\s+{\\s*//\\s*webpackBootstrap\\s*\" --replacement \" /* istanbul ignore next */ {\\n\" dist/index.js",
     "clean": "del-cli dist",
     "coverage": "nyc report --reporter=text-lcov | codecov --disable=gcov --pipe",
-    "coverage:local": "nyc report --reporter=lcov",
+    "coverage:local": "nyc report --reporter=html",
     "lint": "run-p lint:*",
     "lint:spell": "cspell --no-summary src/**/*.js",
     "lint:style": "xo",
     "pretest": "run-s build lint",
     "prepublishOnly": "run-s rebuild test",
+    "prepublishOnly:changelog": "git-chglog > CHANGELOG.mkd",
+    "prepublishOnly:lock": "npm install --package-lock-only && mkdirp lock && mv -f package-lock.json lock",
+    "prepublishOnly:minify": "terser --compress --mangle -- dist/index.js > dist/index.min.js",
     "rebuild": "run-s clean build",
     "test": "nyc --silent ava"
   },
@@ -60,6 +64,8 @@
     }
   },
   "dependencies": {
-    "replace-in-files-cli": "git://github.com/rivy/js.replace-in-files-cli.git"
+    "mkdirp": "^0.5.1",
+    "replace-in-files-cli": "git://github.com/rivy/js.replace-in-files-cli.git",
+    "terser": "^4.3.8"
   }
 }
