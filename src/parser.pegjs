@@ -47,7 +47,8 @@ attribute_list =
 //     _* a:attr_list { return normalize_attribute_list(a, text()); }
 
 attr_list =
-    _* a:attr? b:(_+ c:attr { return c; })* { a = a || []; return [].concat(a).concat(b); }
+    // _* a:attr? b:(_+ c:attr { return c; })* { a = a || []; return [].concat(a).concat(b); }
+    _* a:attr b:(_+ c:attr { return c; })* { a = a || []; return [].concat(a).concat(b); }
 
 attr =
     c:class_name+ { return {class: c}; }
