@@ -1,14 +1,18 @@
 (function webpackUniversalModuleDefinition(root, factory) {
+	//istanbul ignore next
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
+	//istanbul ignore next
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
+	//istanbul ignore next
 	else if(typeof exports === 'object')
 		exports["markdown-attr-parser"] = factory();
+	//istanbul ignore next
 	else
 		root["markdown-attr-parser"] = factory();
-})(window, function() {
-return /******/ (function(modules) { // webpackBootstrap
+})(typeof self !== "undefined" ? self : this, function() {
+return /******/ (function(modules) /* istanbul ignore next */ {
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -91,16 +95,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-/*! no static exports found */
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -108,7 +107,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 // spell-checker:ignore PEGjs
 
-const parser = __webpack_require__(/*! ./parser.pegjs */ "./src/parser.pegjs");
+const parser = __webpack_require__(1);
 
 // A valid output which means nothing has been parsed.
 // Used as error return / invalid output
@@ -146,12 +145,7 @@ module.exports = parse;
 
 
 /***/ }),
-
-/***/ "./src/parser.pegjs":
-/*!**************************!*\
-  !*** ./src/parser.pegjs ***!
-  \**************************/
-/*! no static exports found */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -861,7 +855,5 @@ module.exports = {
 
 
 /***/ })
-
-/******/ });
+/******/ ]);
 });
-//# sourceMappingURL=index.js.map
