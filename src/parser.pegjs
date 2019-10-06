@@ -1,5 +1,5 @@
-// MD Attribute Grammer
-// tested online @ <https://pegjs.org/online>
+// Markdown Attribute Grammer
+// designed/initial testing online @ <https://pegjs.org/online>
 
 {
     function default_value(key) {
