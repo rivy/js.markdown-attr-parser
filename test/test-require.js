@@ -20,7 +20,7 @@ test('simple empty braces', t => {
   const toParse = '{}';
   const r = parse(toParse);
   t.deepEqual(r.prop, nothingHappened.prop);
-  t.is(r.eaten, toParse); // It's an error
+  t.is(r.eaten, ''); // not parsed/eaten
 });
 
 test('line-input', t => {

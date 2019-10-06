@@ -28,7 +28,7 @@ test('simple empty braces', t => {
   const toParse = '{}';
   const r = parse(toParse);
   t.deepEqual(r.prop, errorHappened.prop);
-  t.is(r.eaten, toParse); // It's an error
+  t.is(r.eaten, ''); // not parsed/eaten
 });
 
 test('string broken by EOT', t => {
@@ -225,7 +225,7 @@ test('empty brace', t => {
   const toParse = '{}';
   const r = parse(toParse);
   t.deepEqual(r.prop, errorHappened.prop);
-  t.is(r.eaten, toParse);
+  t.is(r.eaten, ''); // not parsed/eaten
 });
 
 test('only spaces', t => {
@@ -253,14 +253,14 @@ test('braces with spaces', t => {
   const toParse = '{    }';
   const r = parse(toParse);
   t.deepEqual(r.prop, errorHappened.prop);
-  t.is(r.eaten, toParse);
+  t.is(r.eaten, ''); // not parsed/eaten
 });
 
 test('braces with spaces2', t => {
   const toParse = '{ 		 	 }';
   const r = parse(toParse);
   t.deepEqual(r.prop, errorHappened.prop);
-  t.is(r.eaten, toParse);
+  t.is(r.eaten, ''); // not parsed/eaten
 });
 
 test('braces in braces', t => {
@@ -275,14 +275,14 @@ test('spaces then braces', t => {
   const toParse = '   {}';
   const r = parse(toParse);
   t.deepEqual(r.prop, errorHappened.prop);
-  t.is(r.eaten, toParse);
+  t.is(r.eaten, ''); // not parsed/eaten
 });
 
 test('braces then spaces', t => {
   const toParse = '{} 	 ';
   const r = parse(toParse);
   t.deepEqual(r.prop, errorHappened.prop);
-  t.is(r.eaten, '{}');
+  t.is(r.eaten, ''); // not parsed/eaten
 });
 
 test('newline in brace', t => {
