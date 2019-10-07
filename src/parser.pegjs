@@ -39,9 +39,8 @@ embedded_list =
     // / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
 
 attribute_list =
-    _* '<!--' _* '-->' { return normalize_attribute_list([], ''); }
-    / _* '<!--' _* '{' _* a:attr_list _* '}' _* '-->' { return normalize_attribute_list(a, text()); }
-    / _* '{' _* a:attr_list _* '}' { return normalize_attribute_list(a, text()); }
+    _* '<!--' _* '{' _* a:attr_list? _* '}' _* '-->' { return normalize_attribute_list(a, text()); }
+    / _* '{' _* a:attr_list? _* '}' { return normalize_attribute_list(a, text()); }
 
 // bare_attribute_list =
 //     _* a:attr_list { return normalize_attribute_list(a, text()); }
@@ -53,9 +52,9 @@ attr_list =
 attr =
     c:class_name+ { return {class: c}; }
     / i:id_name { return {id: i}; }
-    / k:key_name _* '=' v:string { return {key: k, value: v}; }
-    / k:key_name _* '=' v:value { return {key: k, value: v}; }
-    / k:key_name _* '=' { return {key: k, value: ''}; }
+    / k:key_name '=' v:string { return {key: k, value: v}; }
+    / k:key_name '=' v:value { return {key: k, value: v}; }
+    / k:key_name '=' { return {key: k, value: ''}; }
     / k:key_name { let retval = {key: k}; let v = default_value(k); if (typeof(v) !== 'undefined') { retval.value = v; }; return retval; }
 
 _ "whitespace" = [ \t]
@@ -71,7 +70,7 @@ bracket_open = '{'  // [\x7b]
 bracket_close = '}' // [\x7d]
 
 char = [^\0-\x1f]
-name_char = [^\0-\x1f\x20\x22\x27\x3d\x3c\x3e\x7b\x7d]
+name_char = [^\0-\x1f "'=<>{}]
 value_char = name_char
 quoted_chars = escape_sequence / char
 
