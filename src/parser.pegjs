@@ -59,13 +59,13 @@ attr =
     / k:key_name { let retval = {key: k}; let v = default_value(k); if (typeof(v) !== 'undefined') { retval.value = v; }; return retval; }
 
 BOM "unicode byte-order-mark" = [\ufeff]
-Uss "unicode 'Separator,Space'" = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
+UZs "unicode '[Zs] Separator,Space'" = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
 Usl "unicode line separator" = [\u2028]
 Usp "unicode paragraph separator" = [\u2029]
 Qs "single quote" = "'"
 Qd "double quote" = '"'
 
-_ "whitespace" = [ \t\f\v] / Uss / BOM
+_ "whitespace" = [ \t\f\v] / UZs / BOM
 eol = [\n\r] / Usl / Usp
 escape_char = '\\'
 
