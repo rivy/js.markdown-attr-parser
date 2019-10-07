@@ -57,36 +57,31 @@ attr =
     / k:key_name '=' { return {key: k, value: ''}; }
     / k:key_name { let retval = {key: k}; let v = default_value(k); if (typeof(v) !== 'undefined') { retval.value = v; }; return retval; }
 
-_ "whitespace" = [ \t]
-eol "eol" = [\r\n]
-escape_char = '\\'
-space = ' '         // [\x20]
-double_quote = '"'  // [\x22]
-single_quote = "'"  // [\x27]
-equal = '='         // [\x3d]
-angle_open = '<'    // [\x3c]
-angle_close = '>'   // [\x3e]
-bracket_open = '{'  // [\x7b]
-bracket_close = '}' // [\x7d]
+BOM "unicode byte-order-mark" = [\ufeff]
+Uss "unicode 'Separator,Space'" = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
+Usl "unicode line separator" = [\u2028]
+Usp "unicode paragraph separator" = [\u2029]
+Qs "single quote" = "'"
+Qd "double quote" = '"'
 
-char = [^\0-\x1f]
-name_char = [^\0-\x1f "'=<>{}]
+_ "whitespace" = [ \t\f\v] / Uss / BOM
+eol = [\n\r] / Usl / Usp
+escape_char = '\\'
+
+char = [^\0-\u001f]
+name_char = [^\0-\u001f "'=<>{}]
 value_char = name_char
 quoted_chars = escape_sequence / char
 
-escape_sequence "escape sequence" = escape_char sequence:(
-    double_quote
-    / single_quote
-    )
-    { return sequence; }
+escape_sequence = escape_char sequence:(Qs / Qd) { return sequence; }
 
 string =
-    (double_quote) s:((!double_quote)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (double_quote) { return s.join(''); }
-    / (single_quote) s:((!single_quote)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (single_quote) { return s.join(''); }
+    (Qd) s:((!Qd)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qd) { return s.join(''); }
+    / (Qs) s:((!Qs)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qs) { return s.join(''); }
 
-class_name_charset = [^.\0-\x1f\x20\x3d\x7b\x7d]
+class_name_charset = [^.\0-\u001f ={}]
 id_name_charseq = c:(escape_sequence / name_char)+ { return c.join(''); }
-key_name_charset = [^.#\0-\x1f\x20\x3d\x3c\x3e\x7b\x7d]
+key_name_charset = [^.#\0-\u001f =<>{}]
 value = text:(c:value_char)+ { return text.join(''); }
 
 class_name = '.' n:('.'* (c:(!'.' class_name_charset)+ { return c.join(''); }) { return text(); }) { return n; }
