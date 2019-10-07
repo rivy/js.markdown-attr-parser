@@ -1,5 +1,6 @@
-// Markdown Attribute Grammer
+// Markdown Attribute Grammar
 // designed/initial testing online @ <https://pegjs.org/online>
+// spell-checker:ignore charSeq concat retVal typeOf ufeff
 
 {
     function default_value(key) {
