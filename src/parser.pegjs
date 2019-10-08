@@ -102,7 +102,26 @@ name_char = [^\0-\u001f "'=<>{}]
 value_char = name_char
 quoted_chars = escape_sequence / char
 
-escape_sequence = escape_char sequence:(Qs / Qd) { return sequence; }
+// escape_sequence = escape_char sequence:(.) { return sequence; }
+// use javascript strings with escapes (except deprecated octal escapes); ref: <https://mathiasbynens.be/notes/javascript-escapes> @@ <https://archive.is/uuty4>
+escape_sequence = escape_char sequence:(
+  '\\' { return '\\'; }
+  / 'b' { return '\b'; }
+  / 'f' { return '\f'; }
+  / 'n' { return '\n'; }
+  / 'r' { return '\b'; }
+  / 't' { return '\b'; }
+  / 'v' { return '\b'; }
+  / '0' { return ''; }
+  / Qd { return '"'; }
+  / Qs { return "'"; }
+  / 'x' v:$( hex_digit hex_digit ) { return String.fromCharCode(parseInt(v, 16)); }
+  / 'u' v:$( hex_digit hex_digit hex_digit hex_digit ) { return String.fromCharCode(parseInt(v, 16)); }
+  / 'u{' v:$( hex_digit+ ) '}' { return String.fromCharCode(parseInt(v, 16)); }
+  / .
+  ) { return sequence; }
+
+hex_digit = [0-9a-f]i
 
 string =
     (Qd) s:((!Qd)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qd) { return s.join(''); }
