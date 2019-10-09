@@ -11,7 +11,7 @@
     "coverage": "nyc report --reporter=text-lcov | codecov --disable=gcov --pipe",
     "coverage:local": "nyc report --reporter=html",
     "lint": "run-p lint:*",
-    "lint:spell": "cspell --no-summary src/**/*.js",
+    "lint:spell": "cspell --no-summary src/**/*.js README.*",
     "lint:style": "xo",
     "pretest": "run-s build lint",
     "prepublishOnly": "run-s rebuild test",
