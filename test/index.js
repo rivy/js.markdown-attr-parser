@@ -61,9 +61,12 @@ test('string broken by EOL/CRLF', t => {
 
 test('line-input', t => {
   const toParse = '{key=value}';
+  const expected = {
+    prop: {key: 'value'},
+    eaten: toParse,
+  };
   const r = parse(toParse);
-  t.is(r.prop.key, 'value');
-  t.is(r.eaten, toParse);
+  t.deepEqual(r, expected);
 });
 
 test('brace NOT optional', t => {
