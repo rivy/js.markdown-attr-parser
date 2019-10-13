@@ -31,22 +31,21 @@ attr =
   / k:key_name '=' { return {key: k, value: ''}; }
   / k:key_name { let retval = {key: k}; let v = defaultValue(k); if (typeof(v) !== 'undefined') { retval.value = v; }; return retval; }
 
-class_name = '.' n:('.'* (c:(!'.' class_name_charset)+ { return c.join(''); } / string) { return text(); }) { return n; }
-id_name = '#' n:(id_name_charseq / string) { return n; }
-key_name = n:(c:(key_name_charset)+ { return c.join('') } / string) { return n; }
+class_name = '.' n:('.'* (c:(!'.' literal_charset)+ { return c.join(''); } / string) { return text(); }) { return n || ''; }
+id_name = '#' n:(literal_charseq / string) { return n || ''; }
+key_name = n:(literal_charseq / string) { return n; }
 
 string =
-  (Qd) s:((!Qd)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qd) { return s.join(''); }
-  / (Qs) s:((!Qs)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qs) { return s.join(''); }
+  (Qd) s:((!Qd)c:(eol {return expected('non-EOL character');} / escape_sequence / .) {return c;})+ (Qd) { return s.join(''); }
+  / (Qs) s:((!Qs)c:(eol {return expected('non-EOL character');} / escape_sequence / .) {return c;})+ (Qs) { return s.join(''); }
 
-value = text:(c:value_char)+ { return text.join(''); }
+value = literal_charseq
 
-class_name_charset = [^.\0-\u001f ={}]
-id_name_charseq = c:(escape_sequence / name_char)+ { return c.join(''); }
-key_name_charset = [^.#\0-\u001f =<>{}]
+literal_charset = !([=<>{}] / _ / eol) c:. { return c; }
+literal_charseq = c:(literal_charset)+ { return c.join(''); }
 
 // BOM "unicode byte-order-mark" = [\ufeff]
-UC0 "unicode '[C0] C0 controls'" = [\0-\u001f]
+// UC0 "unicode '[C0] C0 controls'" = [\0-\u001f]
 UZs "unicode '[Zs] Separator,Space'" = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
 Usl "unicode line separator" = [\u2028]
 Usp "unicode paragraph separator" = [\u2029]
@@ -54,22 +53,19 @@ Usp "unicode paragraph separator" = [\u2029]
 Qs "single quote" = "'"
 Qd "double quote" = '"'
 
-del = [\u007f]
-escape_char = '\\'
+// del = [\u007f]
 
 _ "whitespace" = [ \t\f\v] / UZs
 eol = [\n\r] / Usl / Usp
-nonchar = [\uffd0\ufdef\ufff3\uffff\u1FFFE\u1FFFF\u2FFFE\u2FFFF\u3FFFE\u3FFFF\u4FFFE\u4FFFF\u5FFFE\u5FFFF\u6FFFE\u6FFFF\u7FFFE\u7FFFF\u8FFFE\u8FFFF\u9FFFE\u9FFFF\uAFFFE\uAFFFF\uBFFFE\uBFFFF\uCFFFE\uCFFFF\uDFFFE\uDFFFF\uEFFFE\uEFFFF\uFFFFE\uFFFFF\u10FFFE\u10FFFF]
+// nonchar = [\uffd0\ufdef\ufff3\uffff\u1FFFE\u1FFFF\u2FFFE\u2FFFF\u3FFFE\u3FFFF\u4FFFE\u4FFFF\u5FFFE\u5FFFF\u6FFFE\u6FFFF\u7FFFE\u7FFFF\u8FFFE\u8FFFF\u9FFFE\u9FFFF\uAFFFE\uAFFFF\uBFFFE\uBFFFF\uCFFFE\uCFFFF\uDFFFE\uDFFFF\uEFFFE\uEFFFF\uFFFFE\uFFFFF\u10FFFE\u10FFFF]
 
-char = !(UC0 / del / nonchar) c:. { return c; }
-name_char = !(UC0 / del / nonchar / _ / ["'=<>{}]) c:. { return c; }
-value_char = name_char
-quoted_chars = escape_sequence / char
+// char = !(UC0 / del / nonchar) c:. { return c; }
+// quoted_chars = escape_sequence / .
 
-// escape_sequence = escape_char sequence:(.) { return sequence; }
 // use javascript strings with escapes (except deprecated octal escapes); ref: <https://mathiasbynens.be/notes/javascript-escapes> @@ <https://archive.is/uuty4>
+escape_char = '\\'
 escape_sequence = escape_char sequence:(
-  '\\' { return '\\'; }
+  escape_char
   / 'b' { return '\b'; }
   / 'f' { return '\f'; }
   / 'n' { return '\n'; }
@@ -84,5 +80,4 @@ escape_sequence = escape_char sequence:(
   / 'u{' v:$( hex_digit+ ) '}' { return String.fromCharCode(parseInt(v, 16)); }
   / .
   ) { return sequence; }
-
 hex_digit = [0-9a-f]i

@@ -29,11 +29,11 @@ function normalizeParserOutput(a, consumed) {
   a.forEach(elem => {
     // ToDO: HTMLStringEncode() elem.value
     // ToDO: replace any whitespace sequence in class name with '-'
-    //   ... for sanity, replace any invisible characters with '-', as well
-    // ToDO: replace any illegal ID characters with '-'; for HTML5, IDs may not contain any kind of space character and may not be empty, per <http://xahlee.info/js/html_allowed_chars_in_attribute.html>
-    //   ... for sanity, replace any invisible characters with '-', as well
+    //   ... for sanity, replace any invisible characters with '?', as well
+    // ToDO: replace any illegal ID characters with '?'; for HTML5, IDs may not contain any kind of space character and may not be empty, per <http://xahlee.info/js/html_allowed_chars_in_attribute.html>
+    //   ... for sanity, replace any invisible characters with '?', as well
     // * convert class key to class type value
-    if (elem.key === 'class') {
+    if (elem.key === 'class' || elem.key === '.') {
       elem.class = [elem.value];
       delete elem.key;
       delete elem.value;
@@ -42,10 +42,13 @@ function normalizeParserOutput(a, consumed) {
     if (elem.class) {
       // * concat any new unique classes
       retval.prop.class = retval.prop.class || [];
-      retval.prop.class = retval.prop.class.concat(elem.class.filter(item => retval.prop.class.indexOf(item) < 0));
+      retval.prop.class = retval.prop.class.concat(elem.class.filter(item => item && retval.prop.class.indexOf(item) < 0));
+      if (retval.prop.class.length === 0) {
+        delete retval.prop.class;
+      }
     } else if (elem.id) {
-      // * first id tag already used
-    } else if (elem.key === 'id') {
+      // * first id tag already found and used
+    } else if (elem.key === 'id' || elem.key === '#') {
       // ... empty IDs are discarded
       if (typeof elem.value !== 'undefined' && elem.value !== '') {
         retval.prop.id = retval.prop.id || elem.value;
@@ -76,8 +79,13 @@ function parse(value, indexNext, userConfig) {
   value = value.substr(indexNext);
 
   try {
+    const eatEmpty = false;
     const {attributes, match} = parser.parse(value, config);
-    const parsed = normalizeParserOutput(attributes, (attributes.length > 0) ? match : '');
+    const parsed = normalizeParserOutput(attributes, match);
+    if (Object.keys(parsed.prop).length === 0 && parsed.prop.constructor === Object) {
+      parsed.eaten = eatEmpty ? match : '';
+    }
+
     parsed.eaten = prefix + parsed.eaten;
     return parsed;
   } catch (_) {
