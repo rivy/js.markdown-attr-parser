@@ -11,7 +11,7 @@ const nothingHappened = {
   eaten: '',
 };
 
-function normalizeParserOutput(a, consumed) {
+function normalizeParserOutput(parsed) {
   // note: .class == aggregate all unique classes
   // note: #id == first id 'wins' (and tags have priority over 'id=...' keys)
   // note: keys == first key 'wins'
@@ -23,17 +23,19 @@ function normalizeParserOutput(a, consumed) {
   // nonchar = [\uffd0\ufdef\ufff3\uffff\u1FFFE\u1FFFF\u2FFFE\u2FFFF\u3FFFE\u3FFFF\u4FFFE\u4FFFF\u5FFFE\u5FFFF\u6FFFE\u6FFFF\u7FFFE\u7FFFF\u8FFFE\u8FFFF\u9FFFE\u9FFFF\uAFFFE\uAFFFF\uBFFFE\uBFFFF\uCFFFE\uCFFFF\uDFFFE\uDFFFF\uEFFFE\uEFFFF\uFFFFE\uFFFFF\u10FFFE\u10FFFF]
   // char = !(UC0 / del / nonchar) c:. { return c; }
 
+  const {attributes, match} = parsed;
+
   const retval = {};
   retval.prop = {};
-  retval.eaten = consumed;
+  retval.eaten = match;
   // * set id from first id tag
   // ... empty IDs are not allowed
-  const idElement = a && a.find(elem => elem.id);
+  const idElement = attributes && attributes.find(elem => elem.id);
   if (idElement) {
     retval.prop.id = idElement.id;
   }
 
-  a.forEach(elem => {
+  attributes.forEach(elem => {
     // ToDO: HTMLStringEncode() elem.value
     // ToDO: replace any whitespace sequence in class name with '-'
     //   ... for sanity, replace any invisible characters with '?', as well
@@ -87,10 +89,9 @@ function parse(value, indexNext, userConfig) {
 
   try {
     const eatEmpty = false;
-    const {attributes, match} = parser.parse(value, config);
-    const parsed = normalizeParserOutput(attributes, match);
+    const parsed = normalizeParserOutput(parser.parse(value, config));
     if (Object.keys(parsed.prop).length === 0 && parsed.prop.constructor === Object) {
-      parsed.eaten = eatEmpty ? match : '';
+      parsed.eaten = eatEmpty ? parsed.eaten : '';
     }
 
     parsed.eaten = prefix + parsed.eaten;
