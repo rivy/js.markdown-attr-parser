@@ -78,27 +78,34 @@ class_name = '.' n:('.'* (c:(!'.' class_name_charset)+ { return c.join(''); } / 
 id_name = '#' n:(id_name_charseq / string) { return n; }
 key_name = n:(c:(key_name_charset)+ { return c.join('') } / string) { return n; }
 
+string =
+    (Qd) s:((!Qd)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qd) { return s.join(''); }
+    / (Qs) s:((!Qs)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qs) { return s.join(''); }
+
+value = text:(c:value_char)+ { return text.join(''); }
+
 class_name_charset = [^.\0-\u001f ={}]
 id_name_charseq = c:(escape_sequence / name_char)+ { return c.join(''); }
 key_name_charset = [^.#\0-\u001f =<>{}]
-value = text:(c:value_char)+ { return text.join(''); }
 
 BOM "unicode byte-order-mark" = [\ufeff]
 UC0 "unicode '[C0] C0 controls'" = [\0-\u001f]
 UZs "unicode '[Zs] Separator,Space'" = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
 Usl "unicode line separator" = [\u2028]
 Usp "unicode paragraph separator" = [\u2029]
+
 Qs "single quote" = "'"
 Qd "double quote" = '"'
 
-_ "whitespace" = [ \t\f\v] / UZs / BOM
 del = [\u007f]
-eol = [\n\r] / Usl / Usp
 escape_char = '\\'
+
+_ "whitespace" = [ \t\f\v] / UZs / BOM
+eol = [\n\r] / Usl / Usp
 nonchar = [\uffd0\ufdef\ufff3\uffff\u1FFFE\u1FFFF\u2FFFE\u2FFFF\u3FFFE\u3FFFF\u4FFFE\u4FFFF\u5FFFE\u5FFFF\u6FFFE\u6FFFF\u7FFFE\u7FFFF\u8FFFE\u8FFFF\u9FFFE\u9FFFF\uAFFFE\uAFFFF\uBFFFE\uBFFFF\uCFFFE\uCFFFF\uDFFFE\uDFFFF\uEFFFE\uEFFFF\uFFFFE\uFFFFF\u10FFFE\u10FFFF]
 
-char = [^\0-\u001f]
-name_char = [^\0-\u001f "'=<>{}]
+char = !(UC0 / del / nonchar) c:. { return c; }
+name_char = !(UC0 / del / nonchar / _ / ["'=<>{}]) c:. { return c; }
 value_char = name_char
 quoted_chars = escape_sequence / char
 
@@ -122,7 +129,3 @@ escape_sequence = escape_char sequence:(
   ) { return sequence; }
 
 hex_digit = [0-9a-f]i
-
-string =
-    (Qd) s:((!Qd)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qd) { return s.join(''); }
-    / (Qs) s:((!Qs)c:(quoted_chars / eol {return expected('non-EOL character');}) {return c;})+ (Qs) { return s.join(''); }
