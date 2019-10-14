@@ -480,13 +480,10 @@ test('key\'s value looks like a key', t => {
 });
 
 test('key\'s value looks like a key2', t => {
-  const toParse = '{key=key=value}';
+  const toParse = '{key="key=value"}';
   const r = parse(toParse);
-  // FixME
-  //   t.is(r.prop.key, 'key');
-  //   t.is(r.eaten, 'key=key');
-  t.deepEqual(r.prop, errorHappened.prop);
-  t.is(r.eaten, ''); // It's an error
+  t.is(r.prop.key, 'key=value');
+  t.is(r.eaten, toParse);
 });
 
 test('long too parse', t => {
@@ -543,7 +540,7 @@ test('single quote in key', t => {
 test('quoted key', t => {
   const toParse = '{"key"=value}';
   const r = parse(toParse);
-  t.is(r.prop['"key"'], 'value');
+  t.is(r.prop.key, 'value');
   t.is(r.eaten, toParse);
 });
 test('dashed key', t => {
@@ -559,13 +556,12 @@ test('quoted class', t => {
   t.is(r.eaten, toParse);
 });
 
-// FIXME
-// test('quoted id', t => {
-//   const toParse = '{#"id"}';
-//   const r = parse(toParse);
-//   t.is(r.prop.id, '"id"');
-//   t.is(r.eaten, toParse);
-// });
+test('quoted id', t => {
+  const toParse = '{#"id"}';
+  const r = parse(toParse);
+  t.is(r.prop.id, 'id');
+  t.is(r.eaten, toParse);
+});
 
 test('key that start by a quote', t => {
   const toParse = '{\'key=value}';
@@ -577,7 +573,7 @@ test('key that start by a quote', t => {
 test('single-quoted key', t => {
   const toParse = '{"key"=value}';
   const r = parse(toParse);
-  t.is(r.prop['"key"'], 'value');
+  t.is(r.prop.key, 'value');
   t.is(r.eaten, toParse);
 });
 
@@ -591,8 +587,8 @@ test('space in quoted value', t => {
 test('return in quoted value', t => {
   const toParse = '{key="value and\nvalue"}';
   const r = parse(toParse);
-  t.is(r.prop.key, undefined);
-  t.is(r.eaten, '');
+  t.deepEqual(r.prop, errorHappened.prop);
+  t.is(r.eaten, ''); // It's an error
 });
 
 test('line feed in quoted value (brace version)', t => {

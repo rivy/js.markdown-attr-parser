@@ -25,9 +25,9 @@ attribute =
 
 // class_name = '.' n:('.'* (c:(!'.' literal_charset)+ { return c.join(''); } / string) { return text(); })? { return n || ''; }
 // id_name = '#' n:(literal_charseq / string)? { return n || ''; }
-class_name = '.' n:('.'* (c:(!'.' literal_charset)+ { return c.join(''); } / string) { return text(); }) { return n; }
-id_name = '#' n:(literal_charseq / string) { return n; }
-key_name = n:(literal_charseq / string) { return n; }
+class_name = '.' n:('.'* (string / c:(!'.' literal_charset)+ { return c.join(''); }) { return text(); }) { return n; }
+id_name = '#' n:(string / literal_charseq) { return n; }
+key_name = n:(string / literal_charseq) { return n; }
 
 string =
   (Qd) s:((!Qd)c:(eol {return expected('non-EOL');} / escape_sequence / .) {return c;})+ (Qd) { return s.join(''); }
