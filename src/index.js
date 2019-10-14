@@ -16,13 +16,6 @@ function normalizeParserOutput(parsed, config) {
   // note: #id == first id 'wins' (and tags have priority over 'id=...' keys)
   // note: keys == first key 'wins'
 
-  // spell-checker:ignore nonChar ufdef ufeff uffd ufff uffff
-  // BOM "unicode byte-order-mark" = [\ufeff]
-  // UC0 "unicode '[C0] C0 controls'" = [\0-\u001f]
-  // del = [\u007f]
-  // nonchar = [\uffd0\ufdef\ufff3\uffff\u1FFFE\u1FFFF\u2FFFE\u2FFFF\u3FFFE\u3FFFF\u4FFFE\u4FFFF\u5FFFE\u5FFFF\u6FFFE\u6FFFF\u7FFFE\u7FFFF\u8FFFE\u8FFFF\u9FFFE\u9FFFF\uAFFFE\uAFFFF\uBFFFE\uBFFFF\uCFFFE\uCFFFF\uDFFFE\uDFFFF\uEFFFE\uEFFFF\uFFFFE\uFFFFF\u10FFFE\u10FFFF]
-  // char = !(UC0 / del / nonchar) c:. { return c; }
-
   const {attributes, match} = parsed;
 
   const retval = {};
@@ -36,11 +29,6 @@ function normalizeParserOutput(parsed, config) {
   }
 
   attributes.forEach(elem => {
-    // ToDO: HTMLStringEncode() elem.value
-    // ToDO: replace any whitespace sequence in class name with '-'
-    //   ... for sanity, replace any invisible characters with '?', as well
-    // ToDO: replace any illegal ID characters with '?'; for HTML5, IDs may not contain any kind of space character and may not be empty, per <http://xahlee.info/js/html_allowed_chars_in_attribute.html>
-    //   ... for sanity, replace any invisible characters with '?', as well
     // * convert class key to class type value
     if (elem.key === 'class' || elem.key === '.') {
       elem.class = [elem.value];
@@ -68,6 +56,35 @@ function normalizeParserOutput(parsed, config) {
     }
   });
   // retval._trace = a;
+
+  // ToDO: HTMLStringEncode() elem.value
+  // ref: <https://mathiasbynens.be/notes/html5-id-class>
+  // ref: <https://stackoverflow.com/questions/9882257/how-to-reference-a-long-class-name-with-spaces-in-css#comment19004253_9882293>
+  // class names (ie, class attribute values may contain ANY character except NUL; ... and whitespace because of multiple classnames being separated by whitespace)
+  // HTML5 ids are similar; may not be empty, cannot contain spaces, and must be document unique
+  // ToDO: replace any whitespace sequence in class name with '-'
+  //   ... for sanity, replace any invisible characters with '?', as well
+  // ToDO: replace any illegal ID characters with '?'; for HTML5, IDs may not contain any kind of space character and may not be empty, per <http://xahlee.info/js/html_allowed_chars_in_attribute.html>
+  //   ... for sanity, replace any invisible characters with '?', as well
+
+  // spell-checker:ignore nonChar ufdef ufeff uffd ufff uffff
+  // BOM "unicode byte-order-mark" = [\ufeff]
+  // UC0 "unicode '[C0] C0 controls'" = [\0-\u001f]
+  // del = [\u007f]
+  // nonchar = [\uffd0\ufdef\ufff3\uffff\u1FFFE\u1FFFF\u2FFFE\u2FFFF\u3FFFE\u3FFFF\u4FFFE\u4FFFF\u5FFFE\u5FFFF\u6FFFE\u6FFFF\u7FFFE\u7FFFF\u8FFFE\u8FFFF\u9FFFE\u9FFFF\uAFFFE\uAFFFF\uBFFFE\uBFFFF\uCFFFE\uCFFFF\uDFFFE\uDFFFF\uEFFFE\uEFFFF\uFFFFE\uFFFFF\u10FFFE\u10FFFF]
+  // char = !(UC0 / del / nonchar) c:. { return c; }
+
+  // const UC0 = /[\0-\001f]/;
+  // const UZs = /[\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/; // "unicode '[Zs] Separator,Space'"
+  // const Usl = /[\u2028]/; // "unicode line separator"
+  // const Usp = /[\u2029]/; // "unicode paragraph separator"
+  // const del = /[\u007f]/;
+  // const nonchar = /[\uffd0\ufdef\ufff3\uffff\u1FFFE\u1FFFF\u2FFFE\u2FFFF\u3FFFE\u3FFFF\u4FFFE\u4FFFF\u5FFFE\u5FFFF\u6FFFE\u6FFFF\u7FFFE\u7FFFF\u8FFFE\u8FFFF\u9FFFE\u9FFFF\uAFFFE\uAFFFF\uBFFFE\uBFFFF\uCFFFE\uCFFFF\uDFFFE\uDFFFF\uEFFFE\uEFFFF\uFFFFE\uFFFFF\u10FFFE\u10FFFF]/;
+  // const ws =
+  // if (retval.prop.class) {
+  //   retval.prop.class.forEach(function(c) {})
+  // }
+
   return retval;
 }
 
