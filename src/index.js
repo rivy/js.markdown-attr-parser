@@ -11,7 +11,7 @@ const nothingHappened = {
   eaten: '',
 };
 
-function normalizeParserOutput(parsed) {
+function normalizeParserOutput(parsed, config) {
   // note: .class == aggregate all unique classes
   // note: #id == first id 'wins' (and tags have priority over 'id=...' keys)
   // note: keys == first key 'wins'
@@ -64,7 +64,7 @@ function normalizeParserOutput(parsed) {
       }
     } else {
       // ToDO: discard if case-insensitive elem.key matches any already set property per <https://html.spec.whatwg.org/multipage/syntax.html#attributes-2>
-      retval.prop[elem.key] = retval.prop[elem.key] || elem.value;
+      retval.prop[elem.key] = retval.prop[elem.key] || (typeof elem.value === 'undefined' ? config.defaultValue(elem.key) : elem.value);
     }
   });
   // retval._trace = a;
@@ -89,7 +89,7 @@ function parse(value, indexNext, userConfig) {
 
   try {
     const eatEmpty = false;
-    const parsed = normalizeParserOutput(parser.parse(value, config));
+    const parsed = normalizeParserOutput(parser.parse(value), config);
     if (Object.keys(parsed.prop).length === 0 && parsed.prop.constructor === Object) {
       parsed.eaten = eatEmpty ? parsed.eaten : '';
     }

@@ -2,12 +2,6 @@
 // designed/initial testing online @ <https://pegjs.org/online>
 // spell-checker:ignore charSeq concat retVal typeOf
 
-{
-  function defaultValue(key) {
-    return options.defaultValue ? options.defaultValue(key) : undefined;
-  }
-}
-
 embedded_list =
     a:attribute_list .* { return a; }
     // / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
@@ -29,7 +23,7 @@ attr =
   / k:key_name '=' v:string { return {key: k, value: v}; }
   / k:key_name '=' v:value { return {key: k, value: v}; }
   / k:key_name '=' { return {key: k, value: ''}; }
-  / k:key_name { let retval = {key: k}; let v = defaultValue(k); if (typeof(v) !== 'undefined') { retval.value = v; }; return retval; }
+  / k:key_name { return {key: k}; }
 
 // class_name = '.' n:('.'* (c:(!'.' literal_charset)+ { return c.join(''); } / string) { return text(); })? { return n || ''; }
 // id_name = '#' n:(literal_charseq / string)? { return n || ''; }
