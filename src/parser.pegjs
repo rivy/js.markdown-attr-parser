@@ -7,15 +7,15 @@ embedded_list =
   // / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
 
 attribute_list =
-  _* '<!--' _* '{' _* a:attributes? _* '}' _* '-->' { a = a || []; return { attributes: [].concat(a), match: text() }; }
-  / _* '{' _* a:attributes? _* '}' { a = a || []; return { attributes: [].concat(a), match: text() }; }
+  _ '<!--' _ '{' _ a:attributes? _ '}' _ '-->' { a = a || []; return { attributes: [].concat(a), match: text() }; }
+  / _ '{' _ a:attributes? _ '}' { a = a || []; return { attributes: [].concat(a), match: text() }; }
 
 // bare_attribute_list =
 //     _* a:attributes { return { attributes: [].concat(a), match: text() }; }
 
 attributes =
   // _* a:attribute? b:(_+ c:attribute { return c; })* { a = a || []; return [].concat(a).concat(b); }
-  _* a:attribute b:(_+ c:attribute { return c; })* { return [].concat(a).concat(b); }
+  _ a:attribute b:(ws+ c:attribute { return c; })* { return [].concat(a).concat(b); }
 
 attribute =
   c:class_name+ { return {class: c}; }
@@ -35,7 +35,7 @@ string =
 
 value = string / literal_charseq / ''
 
-literal_charset = !([=<>{}] / _ / eol) c:. { return c; }
+literal_charset = !([=<>{}] / ws / eol) c:. { return c; }
 literal_charseq = c:(literal_charset)+ { return c.join(''); }
 
 UZs "unicode '[Zs] Separator,Space'" = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
@@ -45,7 +45,8 @@ Usp "unicode paragraph separator" = [\u2029]
 Qs "single quote" = "'"
 Qd "double quote" = '"'
 
-_ "whitespace" = [ \t\f\v] / UZs
+ws "whitespace" = [ \t\f\v] / UZs
+_ "optional whitespace" = ws*
 eol = [\n\r] / Usl / Usp
 
 // use javascript-type string escapes (except deprecated octal escapes); ref: <https://mathiasbynens.be/notes/javascript-escapes> @@ <https://archive.is/uuty4>
