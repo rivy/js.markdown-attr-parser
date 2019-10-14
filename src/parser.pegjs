@@ -20,9 +20,7 @@ attributes =
 attribute =
   c:class_name+ { return {class: c}; }
   / i:id_name { return {id: i}; }
-  / k:key_name '=' v:string { return {key: k, value: v}; }
   / k:key_name '=' v:value { return {key: k, value: v}; }
-  / k:key_name '=' { return {key: k, value: ''}; }
   / k:key_name { return {key: k}; }
 
 // class_name = '.' n:('.'* (c:(!'.' literal_charset)+ { return c.join(''); } / string) { return text(); })? { return n || ''; }
@@ -35,7 +33,7 @@ string =
   (Qd) s:((!Qd)c:(eol {return expected('non-EOL');} / escape_sequence / .) {return c;})+ (Qd) { return s.join(''); }
   / (Qs) s:((!Qs)c:(eol {return expected('non-EOL');} / escape_sequence / .) {return c;})+ (Qs) { return s.join(''); }
 
-value = literal_charseq
+value = string / literal_charseq / ''
 
 literal_charset = !([=<>{}] / _ / eol) c:. { return c; }
 literal_charseq = c:(literal_charset)+ { return c.join(''); }
