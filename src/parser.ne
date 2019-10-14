@@ -1,29 +1,28 @@
-// Markdown Attribute Grammar
-// designed/initial testing online @ <https://pegjs.org/online>
-// spell-checker:ignore charSeq concat retVal typeOf
+# // Markdown Attribute Grammar
+# // designed/initial testing online @ <https://pegjs.org/online>
+# // spell-checker:ignore charSeq concat retVal typeOf
 
-embedded_list =
-  a:attribute_list .* { return a; }
-  // / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
+embedded_list -> a:attribute_list .* { return a; }
+    // / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
 
 attribute_list =
-  _* '<!--' _* '{' _* a:attributes? _* '}' _* '-->' { a = a || []; return { attributes: [].concat(a), match: text() }; }
-  / _* '{' _* a:attributes? _* '}' { a = a || []; return { attributes: [].concat(a), match: text() }; }
+  _* '<!--' _* '{' _* a:attr_list? _* '}' _* '-->' { a = a || []; return { attributes: [].concat(a), match: text() }; }
+  / _* '{' _* a:attr_list? _* '}' { a = a || []; return { attributes: [].concat(a), match: text() }; }
 
 // bare_attribute_list =
-//     _* a:attributes { return { attributes: [].concat(a), match: text() }; }
+//     _* a:attr_list { return { attribute_list: [].concat(a), match: text() }; }
 
-attributes =
-  // _* a:attribute? b:(_+ c:attribute { return c; })* { a = a || []; return [].concat(a).concat(b); }
-  _* a:attribute b:(_+ c:attribute { return c; })* { return [].concat(a).concat(b); }
+attr_list =
+  // _* a:attr? b:(_+ c:attr { return c; })* { a = a || []; return [].concat(a).concat(b); }
+  _* a:attr b:(_+ c:attr { return c; })* { return [].concat(a).concat(b); }
 
-attribute =
+attr =
   c:class_name+ { return {class: c}; }
   / i:id_name { return {id: i}; }
   / k:key_name '=' v:string { return {key: k, value: v}; }
   / k:key_name '=' v:value { return {key: k, value: v}; }
   / k:key_name '=' { return {key: k, value: ''}; }
-  / k:key_name { return {key: k}; }
+  / k:key_name { let retval = {key: k}; let v = defaultValue(k); if (typeof(v) !== 'undefined') { retval.value = v; }; return retval; }
 
 // class_name = '.' n:('.'* (c:(!'.' literal_charset)+ { return c.join(''); } / string) { return text(); })? { return n || ''; }
 // id_name = '#' n:(literal_charseq / string)? { return n || ''; }
@@ -32,8 +31,8 @@ id_name = '#' n:(literal_charseq / string) { return n; }
 key_name = n:(literal_charseq / string) { return n; }
 
 string =
-  (Qd) s:((!Qd)c:(eol {return expected('non-EOL');} / escape_sequence / .) {return c;})+ (Qd) { return s.join(''); }
-  / (Qs) s:((!Qs)c:(eol {return expected('non-EOL');} / escape_sequence / .) {return c;})+ (Qs) { return s.join(''); }
+  (Qd) s:((!Qd)c:(eol {return expected('non-EOL character');} / escape_sequence / .) {return c;})+ (Qd) { return s.join(''); }
+  / (Qs) s:((!Qs)c:(eol {return expected('non-EOL character');} / escape_sequence / .) {return c;})+ (Qs) { return s.join(''); }
 
 value = literal_charseq
 
