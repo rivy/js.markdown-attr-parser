@@ -53,7 +53,7 @@ test('string broken by EOL/CR', t => {
 });
 
 test('string broken by EOL/CRLF', t => {
-  const toParse = '{key="val\rue"}';
+  const toParse = '{key="val\r\nue"}';
   const r = parse(toParse);
   t.deepEqual(r.prop, errorHappened.prop);
   t.is(r.eaten, ''); // It's an error
