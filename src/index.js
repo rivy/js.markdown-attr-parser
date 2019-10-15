@@ -24,15 +24,17 @@ function normalizeParserOutput(parsed, config) {
 
   // spell-checker:ignore nonChar ufdef ufeff uffd ufff uffff
 
+  // ref: [Javascript Unicode](https://mathiasbynens.be/notes/javascript-unicode) @ <https://archive.is/AbCR7>
+  // unicode-aware (including 'astral' unicode code points)
   // const BOM = /[\ufeff]/u; // "unicode byte-order-mark"
   /* eslint-disable-next-line no-control-regex */
-  const UC0 = /[\0-\u001f]/u; // "unicode '[C0] C0 controls'"
+  const UC0 = /[\u0000-\u001f]/u; // "unicode '[C0] C0 controls'"
   const UZs = /[\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/; // "unicode '[Zs] Separator,Space'"
   const Usl = /[\u2028]/u; // "unicode line separator"
   const Usp = /[\u2029]/u; // "unicode paragraph separator"
   const del = /[\u007f]/u;
-  const nonchar = /[\uffd0\ufdef\ufff3\uffff\u1FFFE\u1FFFF\u2FFFE\u2FFFF\u3FFFE\u3FFFF\u4FFFE\u4FFFF\u5FFFE\u5FFFF\u6FFFE\u6FFFF\u7FFFE\u7FFFF\u8FFFE\u8FFFF\u9FFFE\u9FFFF\uAFFFE\uAFFFF\uBFFFE\uBFFFF\uCFFFE\uCFFFF\uDFFFE\uDFFFF\uEFFFE\uEFFFF\uFFFFE\uFFFFF\u10FFFE\u10FFFF]/u;
-  const ws = new RegExp(['\\s', UZs.source].join('|'), 'gmu');
+  const nonchar = /[\uffd0\ufdef\ufff3\uffff\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
+  const ws = new RegExp(['[ \f\t\v]', UZs.source].join('|'), 'gmu');
   const eol = new RegExp(['[\n\r]', Usl.source, Usp.source].join('|'), 'gmu');
   const invisible = new RegExp([UC0.source, del.source, nonchar.source].join('|'), 'gmu');
 

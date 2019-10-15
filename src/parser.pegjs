@@ -46,7 +46,7 @@ Usp "unicode paragraph separator" = [\u2029]
 Qs "single quote" = "'"
 Qd "double quote" = '"'
 
-ws "whitespace" = [ \t\f\v] / UZs
+ws "whitespace" = [ \f\t\v] / UZs
 _ "optional whitespace" = ws*
 eol = [\n\r] / Usl / Usp
 
