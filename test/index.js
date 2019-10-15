@@ -390,11 +390,20 @@ test('class with spaces2', t => {
   t.is(r.eaten, '');
 });
 
+// WRONG
+// test('class with spaces3', t => {
+//   const toParse = '{  .\'Hello !\'}';
+//   const r = parse(toParse);
+//   t.deepEqual(r.prop.class, ['\'Hello']);
+//   t.is('!\'' in r.prop, true);
+//   t.is(r.eaten, toParse);
+// });
+
 test('class with spaces3', t => {
-  const toParse = '{  .\'Hello !\'}';
+  const toParse = "{  .'Hello !'}"; // eslint-disable-line quotes
   const r = parse(toParse);
-  t.deepEqual(r.prop.class, ['\'Hello']);
-  t.is('!\'' in r.prop, true);
+  t.deepEqual(r.prop.class, ['Hello-!']);
+  t.is('!\'' in r.prop, false);
   t.is(r.eaten, toParse);
 });
 
@@ -514,6 +523,13 @@ test('very long too parse', t => {
 test('class with a dot', t => {
   const toParse = '{ ..class }';
   const r = parse(toParse);
+  t.deepEqual(r.prop.class, ['class']);
+  t.is(r.eaten, toParse);
+});
+
+test('quoted class with a dot', t => {
+  const toParse = '{ .".class" }';
+  const r = parse(toParse);
   t.deepEqual(r.prop.class, ['.class']);
   t.is(r.eaten, toParse);
 });
@@ -549,10 +565,17 @@ test('dashed key', t => {
   t.is(r.prop['eg-key'], 'value');
   t.is(r.eaten, toParse);
 });
+// WRONG
+// test('quoted class', t => {
+//   const toParse = '{."key"}';
+//   const r = parse(toParse);
+//   t.deepEqual(r.prop.class, ['"key"']);
+//   t.is(r.eaten, toParse);
+// });
 test('quoted class', t => {
   const toParse = '{."key"}';
   const r = parse(toParse);
-  t.deepEqual(r.prop.class, ['"key"']);
+  t.deepEqual(r.prop.class, ['key']);
   t.is(r.eaten, toParse);
 });
 
