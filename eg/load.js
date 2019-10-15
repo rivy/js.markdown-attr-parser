@@ -6,5 +6,6 @@ function show(s) {
 
 show('{ }');
 show('{ .class }');
+show('{ ."class with  spaces +\\r\\n EOLs\\x03\\n" }');
 show('{ #id }');
 show('{ key=value #id .class.x.y }');
