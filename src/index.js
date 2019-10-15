@@ -11,6 +11,22 @@ const nothingHappened = {
   eaten: '',
 };
 
+// spell-checker:ignore nonChar ufdef ufeff uffd ufff uffff
+
+// ref: [Javascript Unicode](https://mathiasbynens.be/notes/javascript-unicode) @ <https://archive.is/AbCR7>
+// unicode-aware (including 'astral' unicode code points)
+// const BOM = /[\ufeff]/u; // "unicode byte-order-mark"
+/* eslint-disable-next-line no-control-regex */
+const UC0 = /[\u0000-\u001f]/u; // "unicode '[C0] C0 controls'"
+const UZs = /[\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/; // "unicode '[Zs] Separator,Space'"
+const Usl = /[\u2028]/u; // "unicode line separator"
+const Usp = /[\u2029]/u; // "unicode paragraph separator"
+const del = /[\u007f]/u;
+const nonchar = /[\uffd0\ufdef\ufff3\uffff\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
+const ws = new RegExp(['[ \f\t\v]', UZs.source].join('|'), 'gmu');
+const eol = new RegExp(['[\n\r]', Usl.source, Usp.source].join('|'), 'gmu');
+const invisible = new RegExp([UC0.source, del.source, nonchar.source].join('|'), 'gmu');
+
 function normalizeParserOutput(parsed, config) {
   // note: .class == aggregate all unique classes
   // note: #id == first id 'wins' (and tags have priority over 'id=...' keys)
@@ -22,28 +38,10 @@ function normalizeParserOutput(parsed, config) {
   retval.prop = {};
   retval.eaten = match;
 
-  // spell-checker:ignore nonChar ufdef ufeff uffd ufff uffff
-
-  // ref: [Javascript Unicode](https://mathiasbynens.be/notes/javascript-unicode) @ <https://archive.is/AbCR7>
-  // unicode-aware (including 'astral' unicode code points)
-  // const BOM = /[\ufeff]/u; // "unicode byte-order-mark"
-  /* eslint-disable-next-line no-control-regex */
-  const UC0 = /[\u0000-\u001f]/u; // "unicode '[C0] C0 controls'"
-  const UZs = /[\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/; // "unicode '[Zs] Separator,Space'"
-  const Usl = /[\u2028]/u; // "unicode line separator"
-  const Usp = /[\u2029]/u; // "unicode paragraph separator"
-  const del = /[\u007f]/u;
-  const nonchar = /[\uffd0\ufdef\ufff3\uffff\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
-  const ws = new RegExp(['[ \f\t\v]', UZs.source].join('|'), 'gmu');
-  const eol = new RegExp(['[\n\r]', Usl.source, Usp.source].join('|'), 'gmu');
-  const invisible = new RegExp([UC0.source, del.source, nonchar.source].join('|'), 'gmu');
-
   // * set id from first id tag
   // ... empty IDs are not allowed
   const idElement = attributes && attributes.find(elem => elem.id);
   if (idElement) {
-    // ... clean ID name
-    // idElement.id = idElement.id.replace(ws, '-').replace(eol, '~').replace(invisible, '?');
     retval.prop.id = idElement.id;
   }
 
@@ -90,6 +88,12 @@ function normalizeParserOutput(parsed, config) {
       retval.prop[elem.key] = retval.prop[elem.key] || (typeof elem.value === 'undefined' ? config.defaultValue(elem.key) : elem.value);
     }
   });
+
+  // * clean ID name
+  if (typeof retval.prop.id !== 'undefined' && retval.prop.id !== '') {
+    retval.prop.id = retval.prop.id.replace(ws, '-').replace(eol, '$').replace(invisible, '?');
+  }
+
   // retval._trace = a;
 
   return retval;
