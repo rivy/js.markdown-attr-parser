@@ -26,9 +26,9 @@ attribute =
 // class_name = '.' n:('.'* (c:(!'.' literal_charset)+ { return c.join(''); } / string) { return text(); })? { return n || ''; }
 // id_name = '#' n:(literal_charseq / string)? { return n || ''; }
 // class_name = '.'+ n:(string / c:(!'.' literal_charset)+ { return c.join(''); }) { return n; }
-class_name = '.'+ n:(string / s:(!'.' c:literal_charset { return c; })+ { return s.join(''); }) { return n; }
-id_name = '#' n:(string / literal_charseq) { return n; }
-key_name = n:(string / literal_charseq) { return n; }
+class_name = '.'+ s:(string / seq:(!'.' c:literal_charset { return c; })+ { return seq.join(''); }) { return s; }
+id_name = '#' s:(string / literal_charseq) { return s; }
+key_name = s:(string / literal_charseq) { return s; }
 
 string =
   (Qd) s:((!Qd)c:(eol {return expected('non-EOL');} / escape_sequence / .) {return c;})+ (Qd) { return s.join(''); }
@@ -62,8 +62,8 @@ escape_sequence = escape_char sequence:(
   / 't' { return '\t'; }
   / 'v' { return '\v'; }
   / '0' { return ''; }
-  / Qd { return '"'; }
-  / Qs { return "'"; }
+  / Qd
+  / Qs
   / 'x' v:$( hex_digit hex_digit ) { return String.fromCharCode(parseInt(v, 16)); }
   / 'u' v:$( hex_digit hex_digit hex_digit hex_digit ) { return String.fromCharCode(parseInt(v, 16)); }
   / 'u{' v:$( hex_digit+ ) '}' { return String.fromCharCode(parseInt(v, 16)); }
