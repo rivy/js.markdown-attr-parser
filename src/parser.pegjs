@@ -7,8 +7,8 @@ embedded_list =
   // / a:bare_attribute_list y:(x:(w:_* eol? {return w.join('');}) .* {return x;})? { y = y || ''; a.eaten += y;return a; }
 
 attribute_list =
-  _ '<!--' _ '{' _ a:attributes? _ '}' _ '-->' { a = a || []; return { attributes: [].concat(a), match: text() }; }
-  / _ '{' _ a:attributes? _ '}' { a = a || []; return { attributes: [].concat(a), match: text() }; }
+  _ '<!--' _ '{' _ t:(t:target _ ':' _ { return t; })? a:attributes? _ '}' _ '-->' { a = a || []; return { attributes: [].concat(a), match: text(), target: t }; }
+  / _ '{' _ t:(t:target _ ':' _ { return t; })? a:attributes? _ '}' { a = a || []; return { attributes: [].concat(a), match: text(), target: t }; }
 
 // bare_attribute_list =
 //     _* a:attributes { return { attributes: [].concat(a), match: text() }; }
@@ -25,6 +25,7 @@ attribute =
 class_name = '.'+ s:(string / seq:(!'.' c:literal_charset { return c; })+ { return seq.join(''); }) { return s; }
 id_name = '#' s:(string / literal_charseq) { return s; }
 key_name = s:(string / literal_charseq) { return s; }
+target = s:(string / literal_charseq) { return s; }
 
 string =
   (Qd) s:((!Qd)c:(eol {return expected('non-EOL');} / escape_sequence / .) {return c;})+ (Qd) { return s.join(''); }
