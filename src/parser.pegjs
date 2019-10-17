@@ -14,7 +14,6 @@ attribute_list =
 //     _* a:attributes { return { attributes: [].concat(a), match: text() }; }
 
 attributes =
-  // _* a:attribute? b:(_+ c:attribute { return c; })* { a = a || []; return [].concat(a).concat(b); }
   _ a:attribute b:(ws+ c:attribute { return c; })* { return [].concat(a).concat(b); }
 
 attribute =
@@ -23,9 +22,6 @@ attribute =
   / k:key_name '=' v:value { return {key: k, value: v}; }
   / k:key_name { return {key: k}; }
 
-// class_name = '.' n:('.'* (c:(!'.' literal_charset)+ { return c.join(''); } / string) { return text(); })? { return n || ''; }
-// id_name = '#' n:(literal_charseq / string)? { return n || ''; }
-// class_name = '.'+ n:(string / c:(!'.' literal_charset)+ { return c.join(''); }) { return n; }
 class_name = '.'+ s:(string / seq:(!'.' c:literal_charset { return c; })+ { return seq.join(''); }) { return s; }
 id_name = '#' s:(string / literal_charseq) { return s; }
 key_name = s:(string / literal_charseq) { return s; }
@@ -46,9 +42,9 @@ Usp "unicode paragraph separator" = [\u2029]
 Qs "single quote" = "'"
 Qd "double quote" = '"'
 
-ws "whitespace" = [ \f\t\v] / UZs
 _ "optional whitespace" = ws*
 eol = [\n\r] / Usl / Usp
+ws "whitespace" = [ \f\t\v] / UZs
 
 // use javascript-type string escapes (except deprecated octal escapes); ref: <https://mathiasbynens.be/notes/javascript-escapes> @@ <https://archive.is/uuty4>
 escape_char = '\\'
