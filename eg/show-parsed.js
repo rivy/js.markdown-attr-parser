@@ -9,7 +9,7 @@ function stringify(s) {
 }
 
 function show_parsed(s) {
-  console.log(stringify(s), ' => ', parser(s)); // eslint-disable-line unicorn/no-console-spaces
+  console.log(stringify(s), '=>', parser(s)); // eslint-disable-line unicorn/no-console-spaces
 }
 
 show_parsed('{ }');
