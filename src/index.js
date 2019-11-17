@@ -4,13 +4,6 @@
 
 const parser = require('./parser.pegjs');
 
-// A valid output which means nothing has been parsed.
-// Used as error return / invalid output
-const nothingHappened = {
-  prop: {},
-  eaten: '',
-};
-
 // spell-checker:ignore nonChar ufdef ufeff uffd ufff uffff
 
 // ref: [Javascript Unicode](https://mathiasbynens.be/notes/javascript-unicode) @ <https://archive.is/AbCR7>
@@ -125,7 +118,7 @@ function parse(value, indexNext, userConfig) {
     parsed.eaten = prefix + parsed.eaten;
     return parsed;
   } catch (_) {
-    return nothingHappened;
+    return {prop: {}, eaten: ''}; // unsuccessful parse; return empty result
   }
 }
 
