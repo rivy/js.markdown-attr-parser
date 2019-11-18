@@ -25,6 +25,10 @@ function normalizeParserOutput(parsed, config) {
   // note: #id == first id 'wins' (and tags have priority over 'id=...' keys)
   // note: keys == first key 'wins' (case-insensitive)
 
+  // ref: <https://html.spec.whatwg.org/multipage/syntax.html#attributes-2> @@ <https://archive.is/f90QR>
+  // ref: <https://stackoverflow.com/questions/26341507/can-an-html-element-have-the-same-attribute-twice> @@ <https://archive.is/yDbYZ>
+  // ref: <https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state> @@ <https://archive.is/18rmL>
+
   const {attributes, match} = parsed;
 
   const retval = {};
