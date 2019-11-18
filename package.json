@@ -2,6 +2,9 @@
   "name": "markdown-attr-parser",
   "version": "1.3.0",
   "description": "A parser for markdown entity attributes",
+  "engines": {
+    "node": ">=10"
+  },
   "main": "dist/index.js",
   "scripts": {
     "build": "exec-if-updated --source package.json --source webpack.config.js --source src/** --target dist/** npm run build:do",
